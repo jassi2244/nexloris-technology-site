@@ -1,9 +1,6 @@
 import type { NextConfig } from "next";
 
-const nextConfig: NextConfig = {
-  images: {
-    unoptimized: true,
-  },
-};
+// Keep Vercel's built-in responsive image optimization enabled.
+const nextConfig: NextConfig = {};
 
 export default nextConfig;

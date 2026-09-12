@@ -1,4 +1,10 @@
 import Link from "next/link";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Enquiry received | Nexloris Technology",
+  robots: { index: false, follow: true },
+};
 
 export default function ThankYou() {
   return (

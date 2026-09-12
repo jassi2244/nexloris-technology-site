@@ -4,6 +4,25 @@ const nodemailer = require("nodemailer");
 
 export const runtime = "nodejs";
 
+// JavaScript submissions receive JSON; native HTML forms keep their redirect flow.
+function formResult(request: Request, code: "success" | "invalid" | "config" | "error") {
+  const ok = code === "success";
+  if (request.headers.get("accept")?.includes("application/json")) {
+    return NextResponse.json(
+      { ok, code },
+      { status: ok ? 200 : code === "invalid" ? 400 : 503, headers: { "Cache-Control": "no-store" } },
+    );
+  }
+  // A relative Location stays on the visitor's origin behind deployment proxies.
+  return new NextResponse(null, {
+    status: 303,
+    headers: {
+      Location: ok ? "/thank-you" : `/?form=${code}#contact`,
+      "Cache-Control": "no-store",
+    },
+  });
+}
+
 function clean(value: FormDataEntryValue | null, max = 2000) {
   return String(value ?? "").trim().slice(0, max);
 }
@@ -27,7 +46,7 @@ export async function POST(request: Request) {
 
     // Honeypot: bots often fill hidden fields.
     if (clean(form.get("bot-field"), 200)) {
-      return NextResponse.redirect(new URL("/thank-you/", request.url), 303);
+      return formResult(request, "success");
     }
 
     const name = clean(form.get("name"), 120);
@@ -37,7 +56,7 @@ export async function POST(request: Request) {
     const message = clean(form.get("message"), 4000);
 
     if (!name || !email || !message || !isEmail(email)) {
-      return NextResponse.redirect(new URL("/?form=invalid#contact", request.url), 303);
+      return formResult(request, "invalid");
     }
 
     const gmailUser = process.env.GMAIL_USER;
@@ -45,7 +64,7 @@ export async function POST(request: Request) {
 
     if (!gmailUser || !gmailAppPassword) {
       console.error("Missing GMAIL_USER or GMAIL_APP_PASSWORD");
-      return NextResponse.redirect(new URL("/?form=config#contact", request.url), 303);
+      return formResult(request, "config");
     }
 
     const transporter = nodemailer.createTransport({
@@ -87,9 +106,9 @@ export async function POST(request: Request) {
       html,
     });
 
-    return NextResponse.redirect(new URL("/thank-you/", request.url), 303);
+    return formResult(request, "success");
   } catch (error) {
     console.error("Contact form error:", error);
-    return NextResponse.redirect(new URL("/?form=error#contact", request.url), 303);
+    return formResult(request, "error");
   }
 }

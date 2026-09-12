@@ -1,4 +1,12 @@
 import Image from "next/image";
+import type { Metadata } from "next";
+import Navigation from "./components/Navigation";
+import ContactForm from "./components/ContactForm";
+import { siteUrl } from "./site";
+
+export const metadata: Metadata = {
+  alternates: { canonical: siteUrl },
+};
 
 const services = [
   {
@@ -79,27 +87,11 @@ function Arrow() {
 
 export default function Home() {
   return (
-    <main>
-      <header className="nav-wrap">
-        <nav className="nav container" aria-label="Main navigation">
-          <a className="brand" href="#top" aria-label="Nexloris Technology home">
-            <Image src="/nexloris-logo.png" alt="Nexloris Technology" width={48} height={48} priority />
-            <span>
-              <strong>NEXLORIS</strong>
-              <small>TECHNOLOGY</small>
-            </span>
-          </a>
-          <div className="nav-links">
-            <a href="#services">Services</a>
-            <a href="#work">Work</a>
-            <a href="#about">About</a>
-            <a href="#process">Process</a>
-          </div>
-          <a className="button button-small" href="#contact">Start a Project</a>
-        </nav>
-      </header>
+    <main id="content" tabIndex={-1}>
+      <a className="skip-link" href="#top">Skip to content</a>
+      <Navigation />
 
-      <section className="hero" id="top">
+      <section className="hero" id="top" tabIndex={-1}>
         <div className="hero-orb hero-orb-one" />
         <div className="hero-orb hero-orb-two" />
         <div className="grid-overlay" />
@@ -128,7 +120,7 @@ export default function Home() {
             <div className="visual-panel">
               <div className="visual-topbar"><i /><i /><i /></div>
               <div className="visual-logo">
-                <Image src="/nexloris-logo.png" alt="" width={112} height={112} />
+                <Image src="/nexloris-logo.png" alt="" width={112} height={112} sizes="112px" />
               </div>
               <p>TURNING IDEAS INTO</p>
               <strong>REAL DIGITAL IMPACT</strong>
@@ -149,7 +141,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="section" id="services">
+      <section className="section" id="services" tabIndex={-1}>
         <div className="container">
           <div className="section-heading">
             <div>
@@ -161,7 +153,7 @@ export default function Home() {
           <div className="service-grid">
             {services.map((service) => (
               <article className="service-card" key={service.title}>
-                <span className="service-icon">{service.icon}</span>
+                <span className="service-icon" aria-hidden="true">{service.icon}</span>
                 <h3>{service.title}</h3>
                 <p>{service.text}</p>
               </article>
@@ -170,14 +162,14 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="section section-dark" id="work">
+      <section className="section section-dark" id="work" tabIndex={-1}>
         <div className="container">
           <div className="section-heading light-heading">
             <div>
               <p className="eyebrow">SELECTED WORK</p>
               <h2>Work designed to make businesses look and work better.</h2>
             </div>
-            <p>Real projects, presented without inflated numbers or made-up outcomes.</p>
+            <p>Websites for interior design and education, built around clear services, project presentation and enquiries.</p>
           </div>
           <div className="work-grid">
             {work.map((project) => (
@@ -189,7 +181,7 @@ export default function Home() {
                       src={project.image}
                       alt={`${project.title} website preview`}
                       fill
-                      sizes="(max-width: 900px) 100vw, 50vw"
+                      sizes="(max-width: 640px) 90vw, (max-width: 980px) 85vw, 550px"
                       className="work-shot-image"
                     />
                   </div>
@@ -206,7 +198,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="section" id="about">
+      <section className="section" id="about" tabIndex={-1}>
         <div className="container about-grid">
           <div>
             <p className="eyebrow">ABOUT NEXLORIS</p>
@@ -229,7 +221,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="section process-section" id="process">
+      <section className="section process-section" id="process" tabIndex={-1}>
         <div className="container">
           <div className="section-heading">
             <div>
@@ -250,7 +242,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="contact-section" id="contact">
+      <section className="contact-section" id="contact" tabIndex={-1}>
         <div className="container contact-grid">
           <div className="contact-copy">
             <p className="eyebrow">LET'S BUILD TOGETHER</p>
@@ -263,42 +255,14 @@ export default function Home() {
             </div>
           </div>
 
-          <form className="contact-form" method="POST" action="/api/contact">
-            <p className="hidden-field" aria-hidden="true">
-              <label>
-                Don&apos;t fill this out:
-                <input name="bot-field" tabIndex={-1} autoComplete="off" />
-              </label>
-            </p>
-            <div className="form-row">
-              <label>Name<input required name="name" type="text" placeholder="Your name" /></label>
-              <label>Email<input required name="email" type="email" placeholder="you@company.com" /></label>
-            </div>
-            <label>Company<input name="company" type="text" placeholder="Company or business name" /></label>
-            <label>What do you need?
-              <select name="service" defaultValue="">
-                <option value="" disabled>Select a service</option>
-                <option>Website Design & Development</option>
-                <option>Custom Software</option>
-                <option>Web Application</option>
-                <option>API / Integration</option>
-                <option>SaaS / Digital Product</option>
-                <option>AI-Enabled Solution</option>
-                <option>Maintenance & Support</option>
-                <option>Not sure yet</option>
-              </select>
-            </label>
-            <label>Project details<textarea required name="message" rows={5} placeholder="Tell us a little about the project, goals and timeline." /></label>
-            <button className="button submit-button" type="submit">Send Project Enquiry <Arrow /></button>
-            <small>By submitting, you are only sending a project enquiry. No spam, no mailing list.</small>
-          </form>
+          <ContactForm />
         </div>
       </section>
 
       <footer>
         <div className="container footer-grid">
           <a className="brand" href="#top">
-            <Image src="/nexloris-logo.png" alt="Nexloris Technology" width={42} height={42} />
+            <Image src="/nexloris-logo.png" alt="Nexloris Technology" width={42} height={42} sizes="42px" />
             <span><strong>NEXLORIS</strong><small>TECHNOLOGY</small></span>
           </a>
           <p>Websites. Software. Digital Solutions.</p>
